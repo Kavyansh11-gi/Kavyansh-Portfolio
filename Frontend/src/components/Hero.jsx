@@ -32,8 +32,8 @@ function HeroSection({ dragAreaRef }) {
 
   const handleResumeClick = () => {
     const link = document.createElement("a");
-    link.href = "/Sayyed_Rabeeh_Resume.pdf";  
-    link.download = "Sayyed_Rabeeh_Resume.pdf";
+    link.href = "/kavyanshResume.pdf";  
+    link.download = "kavyanshResume.pdf";
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -89,7 +89,7 @@ function HeroSection({ dragAreaRef }) {
           </button>
   
           <a
-            href="https://github.com/sayyedrabeeh"
+            href="https://github.com/Kavyansh11-gi"
             target="_blank"
             rel="noopener noreferrer"
             className="px-6 py-3 bg-transparent border border-blue-400/30 rounded-xl

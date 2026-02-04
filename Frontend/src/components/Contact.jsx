@@ -1,11 +1,8 @@
 import React, { useState } from "react";
-import emailjs from "@emailjs/browser";
 import { motion } from "framer-motion";
 
-const SERVICE_ID = "service_9yd1n4p";         
-const ADMIN_TEMPLATE_ID = "template_hjl2usu"; 
-const REPLY_TEMPLATE_ID = "template_kpvwb8m";  
-const PUBLIC_KEY = "D9EU6dPNWw6qO0DF7";             
+// Replace with your actual Formspree Form ID
+const FORMSPREE_ID = "xreqrerv"; 
 
 export default function ContactSection() {
   const [formData, setFormData] = useState({
@@ -21,10 +18,6 @@ export default function ContactSection() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const sendEmail = async (templateId, variables) => {
-    return emailjs.send(SERVICE_ID, templateId, variables, PUBLIC_KEY);
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.name || !formData.email || !formData.message) {
@@ -35,26 +28,25 @@ export default function ContactSection() {
     setLoading(true);
     setStatus("");
 
-    const payload = {
-      name: formData.name,
-      email: formData.email,
-      phone: formData.phone || "Not provided",
-      message: formData.message,
-      date: new Date().toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-      }),
-    };
-
     try {
-      await sendEmail(ADMIN_TEMPLATE_ID, payload);
-      await sendEmail(REPLY_TEMPLATE_ID, payload);
+      const response = await fetch(`https://formspree.io/f/${FORMSPREE_ID}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+        body: JSON.stringify(formData),
+      });
 
-      setStatus("Thank you! We sent you a confirmation email.");
-      setFormData({ name: "", email: "", phone: "", message: "" });
+      if (response.ok) {
+        setStatus("Thank you! Your message has been sent.");
+        setFormData({ name: "", email: "", phone: "", message: "" });
+      } else {
+        const data = await response.json();
+        setStatus(data.errors ? data.errors[0].message : "Failed to send. Try again.");
+      }
     } catch (err) {
-      setStatus("Failed to send. Try again.");
+      setStatus("Error connecting to the server.");
       console.error(err);
     } finally {
       setLoading(false);
@@ -63,14 +55,14 @@ export default function ContactSection() {
 
   return (
     <section id='contact' className="relative min-h-screen flex items-center justify-center overflow-hidden py-16 md:py-20 px-4">
-      {/* Responsive Glow Effects - Scaled down for mobile */}
+      {/* Background Glows */}
       <div className="absolute top-10 left-10 md:top-20 md:left-20 w-48 h-48 md:w-96 md:h-96 bg-purple-500/10 md:bg-purple-500/20 rounded-full blur-3xl animate-pulse" />
       <div className="absolute bottom-10 right-10 md:bottom-20 md:right-20 w-48 h-48 md:w-96 md:h-96 bg-blue-500/10 md:bg-blue-500/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: "1s" }} />
 
       <motion.div
-        initial={{ opacity: 0, x: window.innerWidth < 768 ? 50 : 200 }} // Smaller x offset for mobile
+        initial={{ opacity: 0, x: window.innerWidth < 768 ? 50 : 200 }}
         whileInView={{ opacity: 1, x: 0 }}
-        viewport={{ once: false, amount: 0.2 }} // Triggers earlier on mobile
+        viewport={{ once: false, amount: 0.2 }}
         transition={{ duration: 0.8 }}
         className="relative z-10 w-full max-w-2xl mx-auto px-4 md:px-6"
       >
@@ -78,7 +70,7 @@ export default function ContactSection() {
           <h2 className="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-200 to-blue-200">
             Get in Touch
           </h2>
-          <p className="mt-2 md:mt-3 text-purple-300/70 text-sm md:text-base">We'll reply in 24 hours</p>
+          <p className="mt-2 md:mt-3 text-purple-300/70 text-sm md:text-base">I'll reply within 24 hours</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6">

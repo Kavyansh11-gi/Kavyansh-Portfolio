@@ -1,22 +1,28 @@
-import { FaPython, FaReact, FaHtml5, FaCss3Alt, FaBootstrap, FaGitAlt, FaFigma } from "react-icons/fa";
-import { SiDjango, SiTailwindcss, SiPostgresql, SiOpencv, SiFramer } from "react-icons/si";
+import { FaPython, FaReact, FaHtml5, FaCss3Alt, FaBootstrap, FaGitAlt, FaFigma, FaJava, FaNodeJs} from "react-icons/fa";
+import { IoLogoJavascript } from "react-icons/io5";
+import { PiFileCppFill } from "react-icons/pi";
+import { SiDjango, SiTailwindcss, SiPostgresql, SiOpencv, SiFramer, SiMongodb, SiMysql} from "react-icons/si";
 import Matter from "matter-js";
 import { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 
 const skillsIcons = [
   { icon: FaPython, name: "Python", color: "#3776AB" },
-  { icon: SiDjango, name: "Django", color: "#0C4B33" },
   { icon: FaReact, name: "React", color: "#61DBFB" },
   { icon: SiTailwindcss, name: "TailwindCSS", color: "#38BDF8" },
   { icon: FaHtml5, name: "HTML5", color: "#E34F26" },
   { icon: FaCss3Alt, name: "CSS3", color: "#1572B6" },
   { icon: FaBootstrap, name: "Bootstrap", color: "#7952B3" },
   { icon: SiPostgresql, name: "PostgreSQL", color: "#336791" },
-  { icon: SiOpencv, name: "OpenCV", color: "#5C3EE8" },
   { icon: FaGitAlt, name: "Git", color: "#F05032" },
   { icon: FaFigma, name: "Figma", color: "#F24E1E" },
-  { icon: SiFramer, name: "Framer Motion", color: "#E91E63" },
+  { icon: FaJava, name: "Java", color: "#007396" },
+  { icon: FaNodeJs, name: "Node.js", color: "#339933" },
+  { icon: IoLogoJavascript, name: "JavaScript", color: "#F7DF1E" },
+  { icon: PiFileCppFill, name: "C++", color: "#00599C" },
+  { icon: SiMongodb, name: "MongoDB", color: "#47A248" },
+  { icon: SiMysql, name: "MySQL", color: "#4479A1" },
+
 ];
 
 export default function SkillsSection() {
