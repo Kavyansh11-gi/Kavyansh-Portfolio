@@ -67,9 +67,12 @@ export default function Projects() {
                     </motion.p>
                     <div className="flex justify-center lg:justify-start">
                         <motion.button 
-                            className="w-max px-6 py-2 md:px-8 md:py-3 bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 rounded-3xl font-bold text-white shadow-2xl transition-all duration-300 text-xl md:text-2xl"
-                            whileHover={{ scale: 1.05 }}
                             onClick={handleExploreAll}
+                            whileHover={{ scale: 1.05, boxShadow: "0 0 40px rgba(99, 102, 241, 0.4)" }}
+                            whileTap={{ scale: 0.95 }}
+                            className="w-max px-8 py-4 rounded-full font-black text-white uppercase tracking-widest text-sm md:text-base 
+                                       bg-[linear-gradient(45deg,#4f46e5,#7c3aed,#db2777,#ef4444,#f59e0b)] 
+                                       bg-[length:200%_200%] animate-gradient-flow shadow-2xl transition-all duration-500"
                         >
                             Explore All 
                         </motion.button>

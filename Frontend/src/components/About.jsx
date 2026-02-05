@@ -25,9 +25,9 @@ function About() {
                     viewport={{ once: false, amount: 0.2 }}
                     transition={{ duration: 1.2 }}
                 >
-                    <p>I'm <span className="text-blue-400 font-semibold">sayyed rabeeh</span> a <span className="text-purple-400 font-semibold">Full Stack Developer</span> passionate about merging design, logic, and creativity.</p>
-                    <p>Coming from a <span className="text-blue-400">Humanities</span> background, I bring perspective and empathy into my code.</p>
-                    <p>I build with <span className="text-blue-400">Python (Django)</span> and <span className="text-purple-400">React.js</span>.</p>
+                    <p>I'm <span className="text-blue-400 font-semibold">Kavyansh Nigam</span>, a <span className="text-purple-400 font-semibold">Full Stack Developer</span> at Bennett University passionate about merging algorithmic logic with creative design.</p>
+                    <p>I bridge the gap between <span className="text-blue-400">complex back-end architecture</span> and human-centric front-end experiences.</p>
+
                 </motion.div>
                   
                 {/* ANIMATION SIDE - CIRCULAR BORDER REMOVED FROM IMAGE */}

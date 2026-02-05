@@ -80,7 +80,7 @@ export default function ExternalLinks() {
                         className="group flex items-center gap-3 w-full md:w-auto px-6 py-4 bg-white/5 backdrop-blur-sm border border-blue-500/30 rounded-2xl text-blue-200 hover:bg-white/10 transition-all duration-300 shadow-lg hover:shadow-blue-500/20"
                     >
                         <FiPhone className="w-6 h-6 text-blue-400" />
-                        <span className="font-medium">+91 1234567890</span>
+                        <span className="font-medium">+91 8269210969</span>
                         <FiCopy className="w-5 h-5 text-blue-400 opacity-0 group-hover:opacity-100 transition-opacity ml-auto md:ml-0"/>
                     </button>
                 </motion.div>

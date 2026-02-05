@@ -1,23 +1,33 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { 
-  ExternalLink, 
-  ChevronLeft, ChevronRight, Calendar, Github
-} from "lucide-react";
+import { ExternalLink, ChevronLeft, ChevronRight, Calendar, Github, Cpu, Code2 } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import moment from "moment";
 
-// Replace this array with your actual project data
+// Integrated project data based on your background in AI and CV
 const MOCK_PROJECTS = [
     {
         id: 1,
-        name: "Sample Project",
-        description: "This is a local static project description showcase.",
+        name: "TaleTailor",
+        description: "AI-powered storytelling platform with real-time collaboration and neural narrative generation.",
         media_type: "image",
-        images: [{ image: "https://via.placeholder.com/800x400" }],
-        tech_stack: "React, Tailwind, Lucide",
-        github_link: "https://github.com",
-        live_link: "https://google.com",
-        created_at: new Date().toISOString(),
-        project_type: "react"
+        images: [{ image: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=1200" }],
+        tech_stack: "Python, Django, React, WebSockets",
+        github_link: "https://github.com/sayyedrabeeh/taletailor",
+        live_link: "#",
+        created_at: "2025-09-15",
+        project_type: "fullstack"
+    },
+    {
+        id: 2,
+        name: "Privacy deblur",
+        description: "Lightweight, real-time image deblurring system optimized for local webcam feeds using PyTorch.",
+        media_type: "image",
+        images: [{ image: "https://images.unsplash.com/photo-1527430253228-59368865da2d?auto=format&fit=crop&w=1200" }],
+        tech_stack: "Python, PyTorch, OpenCV, CUDA",
+        github_link: "#",
+        live_link: "#",
+        created_at: "2025-10-20",
+        project_type: "ai"
     }
 ];
 
@@ -25,13 +35,9 @@ export default function Project_Component({ Project_type }) {
     const [project, setProject] = useState([]);
     const [currentImgIdx, setCurrentImgIdx] = useState({});
     const [loading, setLoading] = useState(false);
-    const [initialLoad, setInitialLoad] = useState(true);
-    const observerTarget = useRef(null);
 
     const fetchProjects = useCallback(async () => {
         setLoading(true);
-        
-        // Filter local data based on type
         const filtered = Project_type 
             ? MOCK_PROJECTS.filter(p => p.project_type === Project_type)
             : MOCK_PROJECTS;
@@ -42,117 +48,115 @@ export default function Project_Component({ Project_type }) {
             filtered.forEach((p) => { idx[p.id] = 0 });
             setCurrentImgIdx(idx);
             setLoading(false);
-            setInitialLoad(false);
-        }, 500);
+        }, 600);
     }, [Project_type]);
 
-    useEffect(() => {
-        fetchProjects();
-    }, [Project_type, fetchProjects]);
+    useEffect(() => { fetchProjects(); }, [Project_type, fetchProjects]);
 
-    const nextImag = (id, total) => {
-        setCurrentImgIdx((prev) => ({ ...prev, [id]: (prev[id] + 1) % total }));
-    };
-    
-    const prevImag = (id, total) => {
-        setCurrentImgIdx((prev) => ({ ...prev, [id]: (prev[id] - 1 + total) % total }));
-    };
-
-    const fmtDate = (d) => {
-        return moment(d).format("MMMM YYYY");
-    };
+    const nextImg = (id, total) => setCurrentImgIdx((prev) => ({ ...prev, [id]: (prev[id] + 1) % total }));
+    const prevImg = (id, total) => setCurrentImgIdx((prev) => ({ ...prev, [id]: (prev[id] - 1 + total) % total }));
 
     return (
-        <div className="min-h-screen bg-gray-900">
-            <header className="sticky top-0 z-10 bg-gray-800 border-b border-gray-700">
-                <div className="max-w-2xl mx-auto flex flex-col items-center justify-center px-4 py-3">
-                    <h1 className="text-[26px] font-extrabold text-white tracking-tight uppercase">
-                        {Project_type || "ALL PROJECTS"}
+        <div className="min-h-screen bg-transparent font-sans pb-32">
+            {/* --- GLOSS HEADER --- */}
+            <header className="sticky top-0 z-50 py-8 backdrop-blur-xl bg-black/40 border-b border-white/[0.05]">
+                <div className="max-w-5xl mx-auto px-6 flex flex-col items-center">
+                    <motion.span 
+                        initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+                        className="text-[10px] font-black tracking-[0.8em] text-[var(--accent)] uppercase mb-2"
+                    >
+                        Terminal Output
+                    </motion.span>
+                    <h1 className="text-4xl md:text-6xl font-black text-white tracking-tighter uppercase">
+                        {Project_type || "System"} <span className="opacity-40">Artifacts</span>
                     </h1>
-                    <p className="text-sm text-gray-400">Project Showcase</p>
-                    <div className="mt-2 h-1 w-14 rounded-full bg-indigo-500"></div>
                 </div>
             </header>
 
-            <main className="max-w-2xl mx-auto px-4 py-6 space-y-8 pb-20">
-                {loading && (
-                    <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50">
-                        <div className="w-12 h-12 border-4 border-t-transparent border-indigo-500 rounded-full animate-spin"></div>
-                    </div>
-                )}
-
-                {project.length === 0 && !loading ? (
-                    <p className="text-center text-gray-400 py-12">No Projects found in this category.</p>
-                ) : (
-                    project.map((p) => {
+            <main className="max-w-5xl mx-auto px-6 py-16 space-y-32">
+                <AnimatePresence mode="wait">
+                    {project.map((p, idx) => {
                         const imgIdx = currentImgIdx[p.id] ?? 0;
                         const manyImage = p.media_type === 'image' && p.images?.length > 1;
 
                         return (
-                            <article key={p.id} className="bg-gray-800 rounded-2xl shadow-xl overflow-hidden border border-gray-700 transition-all hover:border-gray-600">
-                                <div className="flex items-center justify-between p-5">
-                                    <div className="flex items-center gap-4">
-                                        <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center font-bold text-white shadow-inner">
-                                            {p.name.charAt(0).toUpperCase()}
-                                        </div>
-                                        <div>
-                                            <h3 className="font-bold text-lg text-white">{p.name}</h3>
-                                            <div className="flex items-center gap-2 text-xs text-gray-400">
-                                                <Calendar className="w-3 h-3" />
-                                                <span>{fmtDate(p.created_at)}</span>
+                            <motion.article 
+                                key={p.id}
+                                initial={{ opacity: 0, y: 40 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                className="group relative"
+                            >
+                                {/* THEMED GLOW BACKGROUND */}
+                                <div className="absolute -inset-10 bg-[var(--accent)] opacity-0 group-hover:opacity-[0.04] blur-[120px] transition-opacity duration-1000 rounded-[5rem]" />
+
+                                {/* MAIN CARD CONTENT */}
+                                <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-0 rounded-[3rem] overflow-hidden border border-white/[0.08] bg-white/[0.02] backdrop-blur-3xl shadow-2xl transition-all duration-500 group-hover:border-[var(--accent)]/30">
+                                    
+                                    {/* Left Side: Visual Media */}
+                                    <div className="lg:col-span-7 relative overflow-hidden bg-black/60 group/media border-r border-white/[0.05]">
+                                        <img 
+                                            src={p.images[imgIdx].image} 
+                                            className="w-full h-full object-cover opacity-80 group-hover/media:opacity-100 group-hover/media:scale-105 transition-all duration-1000" 
+                                            alt={p.name} 
+                                        />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+                                        
+                                        {manyImage && (
+                                            <div className="absolute inset-x-4 top-1/2 -translate-y-1/2 flex justify-between opacity-0 group-hover/media:opacity-100 transition-opacity">
+                                                <button onClick={() => prevImg(p.id, p.images.length)} className="p-3 bg-black/60 backdrop-blur-md rounded-full text-white hover:bg-white hover:text-black transition-all"><ChevronLeft size={20}/></button>
+                                                <button onClick={() => nextImg(p.id, p.images.length)} className="p-3 bg-black/60 backdrop-blur-md rounded-full text-white hover:bg-white hover:text-black transition-all"><ChevronRight size={20}/></button>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* Right Side: Data & Content */}
+                                    <div className="lg:col-span-5 p-8 md:p-12 flex flex-col justify-between space-y-8">
+                                        <div className="space-y-6">
+                                            <div className="flex items-center justify-between">
+                                                <div className="w-14 h-14 rounded-2xl flex items-center justify-center font-black text-white text-xl shadow-2xl"
+                                                     style={{ background: 'var(--accent)', boxShadow: '0 0 30px var(--accent)44' }}>
+                                                    {p.name.charAt(0)}
+                                                </div>
+                                                <div className="flex gap-2">
+                                                    <a href={p.github_link} className="p-3 bg-white/5 rounded-xl hover:bg-white/10 border border-white/10 transition-colors"><Github size={18}/></a>
+                                                </div>
+                                            </div>
+
+                                            <div className="space-y-2">
+                                                <h3 className="text-3xl font-black text-white group-hover:text-[var(--accent)] transition-colors tracking-tighter">
+                                                    {p.name}
+                                                </h3>
+                                                <div className="flex items-center gap-4 text-[10px] font-bold text-gray-500 uppercase tracking-widest">
+                                                    <span className="flex items-center gap-1.5"><Calendar size={12} className="text-[var(--accent)]"/> {moment(p.created_at).format("YYYY")}</span>
+                                                    <span className="flex items-center gap-1.5"><Code2 size={12} className="text-[var(--accent)]"/> {p.project_type}</span>
+                                                </div>
+                                            </div>
+
+                                            <p className="text-gray-400 text-sm md:text-base leading-relaxed font-medium">
+                                                {p.description}
+                                            </p>
+
+                                            <div className="flex flex-wrap gap-2 pt-4">
+                                                {p.tech_stack.split(',').map((t, i) => (
+                                                    <span key={i} className="px-3 py-1 bg-white/[0.03] border border-white/[0.08] rounded-lg text-[9px] font-black text-white/40 uppercase tracking-tighter hover:text-white hover:border-[var(--accent)]/50 transition-all">
+                                                        {t.trim()}
+                                                    </span>
+                                                ))}
                                             </div>
                                         </div>
+
+                                        <a href={p.live_link} className="relative group/btn w-full py-4 rounded-2xl font-black text-white text-xs uppercase tracking-[0.2em] transition-all overflow-hidden flex items-center justify-center gap-3"
+                                           style={{ background: 'var(--accent)', boxShadow: '0 10px 40px -10px var(--accent)' }}>
+                                            <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover/btn:translate-x-[100%] transition-transform duration-700" />
+                                            <ExternalLink size={14}/> Initiate Live Session
+                                        </a>
                                     </div>
                                 </div>
-
-                                {/* Media Section */}
-                                {p.media_type === 'image' && p.images?.length > 0 && (
-                                    <div className="relative bg-black group">
-                                        <img src={p.images[imgIdx].image} alt={p.name} className="w-full max-h-96 object-contain mx-auto" />
-                                        {manyImage && (
-                                            <>
-                                                <button onClick={() => prevImag(p.id, p.images.length)} className="absolute left-3 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-indigo-600 p-2 rounded-full text-white transition-colors opacity-0 group-hover:opacity-100"><ChevronLeft className="w-5 h-5" /></button>
-                                                <button onClick={() => nextImag(p.id, p.images.length)} className="absolute right-3 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-indigo-600 p-2 rounded-full text-white transition-colors opacity-0 group-hover:opacity-100"><ChevronRight className="w-5 h-5" /></button>
-                                            </>
-                                        )}
-                                    </div>
-                                )}
-
-                                {/* Content Section */}
-                                <div className="p-6 space-y-4">
-                                    <p className="text-gray-300 text-sm leading-relaxed">{p.description}</p>
-                                    
-                                    {p.tech_stack && (
-                                        <div className="flex flex-wrap gap-2 pt-2">
-                                            {p.tech_stack.split(',').map((t, i) => (
-                                                <span key={i} className="px-2.5 py-1 bg-gray-900/50 border border-gray-700 rounded-md text-[11px] font-medium text-indigo-300 uppercase tracking-wider">
-                                                    {t.trim()}
-                                                </span>
-                                            ))}
-                                        </div>
-                                    )}
-
-                                    <div className="flex items-center gap-3 pt-4">
-                                        {p.live_link && (
-                                            <a href={p.live_link} target="_blank" rel="noopener noreferrer" className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 rounded-lg text-xs font-bold text-white transition-all shadow-lg shadow-indigo-900/20">
-                                                <ExternalLink className="w-3.5 h-3.5" /> Live Demo
-                                            </a>
-                                        )}
-                                        {p.github_link && (
-                                            <a href={p.github_link} target="_blank" rel="noopener noreferrer" className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-gray-700 hover:bg-gray-600 rounded-lg text-xs font-bold text-white transition-all">
-                                                <Github className="w-3.5 h-3.5" /> Source Code
-                                            </a>
-                                        )}
-                                    </div>
-                                </div>
-                            </article>
+                            </motion.article>
                         );
-                    })
-                )}
-                
-                <div ref={observerTarget} className="mt-10 py-10 flex items-center justify-center border-t border-gray-800">
-                    {!initialLoad && <span className="text-gray-500 text-xs tracking-widest uppercase">End of Portfolio</span>}
-                </div>
+                    })}
+                </AnimatePresence>
             </main>
         </div>
     );
