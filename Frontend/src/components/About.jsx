@@ -29,7 +29,7 @@ function About() {
                     <p>I bridge the gap between <span className="text-blue-400">complex back-end architecture</span> and human-centric front-end experiences.</p>
 
                 </motion.div>
-                  
+                
                 {/* ANIMATION SIDE - CIRCULAR BORDER REMOVED FROM IMAGE */}
                 <motion.div className="flex-1 flex justify-center items-center relative py-10 md:py-0"
                     initial={{ opacity: 0, scale: 0.5 }}

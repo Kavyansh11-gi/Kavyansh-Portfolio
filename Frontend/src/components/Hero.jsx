@@ -1,150 +1,150 @@
-import React, { useState, useRef, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import React, { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 
-function HeroSection({ dragAreaRef }) {
+function HeroSection({ theme }) {
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const [rotation, setRotation] = useState({ x: 0, y: 0 });
-  const constraintsRef = useRef(null);
-  const [showPopup, setShowPopup] = useState(false);
+
+  // --- TYPING ANIMATION LOGIC ---
+  const roles = ["Full Stack Developer", "Computer Vision Enthusiast", "HPC Learner", "CSE Student"];
+  const [roleIndex, setRoleIndex] = useState(0);
+  const [displayText, setDisplayText] = useState("");
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
-    constraintsRef.current = document.body;
-  }, []);
+    const currentFullText = roles[roleIndex];
+    const baseSpeed = isDeleting ? 30 : 100; 
+    const nextTick = isDeleting && displayText === "" ? 400 : baseSpeed;
 
-  const handleMouseMove = (e) => {
-    // Only apply 3D effect on larger screens for better performance
-    if (window.innerWidth < 768) return;
+    const handleTyping = () => {
+      if (!isDeleting) {
+        setDisplayText(currentFullText.substring(0, displayText.length + 1));
+        if (displayText === currentFullText) {
+          setTimeout(() => setIsDeleting(true), 2500);
+        }
+      } else {
+        setDisplayText(currentFullText.substring(0, displayText.length - 1));
+        if (displayText === "") {
+          setIsDeleting(false);
+          setRoleIndex((prev) => (prev + 1) % roles.length);
+        }
+      }
+    };
+    const timer = setTimeout(handleTyping, nextTick);
+    return () => clearTimeout(timer);
+  }, [displayText, isDeleting, roleIndex]);
+
+  // --- UNIFIED INTERACTION LOGIC (MOUSE + TOUCH) ---
+  const handleInteraction = (clientX, clientY, currentTarget) => {
+    const rect = currentTarget.getBoundingClientRect();
     
-    const card = e.currentTarget;
-    const rect = card.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
+    // Parallax Logic
+    const xPos = (clientX - rect.left) / rect.width - 0.5;
+    const yPos = (clientY - rect.top) / rect.height - 0.5;
+    setMousePos({ x: xPos, y: yPos });
 
+    // 3D Tilt Logic
     const centerX = rect.width / 2;
     const centerY = rect.height / 2;
-
-    const rotateX = (y - centerY) / 10;
-    const rotateY = (centerX - x) / 10;
-
+    const rotateX = (clientY - rect.top - centerY) / 15;
+    const rotateY = (centerX - (clientX - rect.left)) / 15;
     setRotation({ x: rotateX, y: rotateY });
   };
 
-  const handleMouseLeave = () => setRotation({ x: 0, y: 0 });
+  const handleMouseMove = (e) => handleInteraction(e.clientX, e.clientY, e.currentTarget);
+  
+  const handleTouchMove = (e) => {
+    // Prevent scrolling while interacting with the photo
+    const touch = e.touches[0];
+    handleInteraction(touch.clientX, touch.clientY, e.currentTarget);
+  };
 
-  const handleResumeClick = () => {
-    const link = document.createElement("a");
-    link.href = "/kavyanshResume.pdf";  
-    link.download = "kavyanshResume.pdf";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-
-    setShowPopup(true);
-    setTimeout(() => setShowPopup(false), 2500);
+  const handleReset = () => {
+    setRotation({ x: 0, y: 0 });
+    setMousePos({ x: 0, y: 0 });
   };
 
   return (
     <section
       id="Home"
+      onMouseMove={handleMouseMove}
+      onTouchMove={handleTouchMove}
+      onMouseLeave={handleReset}
+      onTouchEnd={handleReset}
       className="min-h-screen flex flex-col-reverse md:flex-row items-center justify-center 
-                 text-center md:text-left px-6 md:px-20 py-20 md:py-0 relative z-10 overflow-hidden"
+                 text-center md:text-left px-6 md:px-20 py-20 md:py-0 relative z-10 overflow-hidden transition-colors duration-1000"
     >
-      {/* Content Side */}
-      <div className="w-full md:w-1/2 text-white space-y-4 md:space-y-6 relative mt-10 md:mt-0">
-        <motion.h1
-          initial={{ opacity: 0, y: 50 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
-          className="text-4xl md:text-6xl font-bold leading-tight"
-        >
-          Hey, I'm <span className="text-blue-400">Kavyansh Nigam</span>
-        </motion.h1>
+      {/* Dynamic Parallax Background */}
+      <motion.div 
+        className="absolute inset-0 z-0 opacity-[0.03] pointer-events-none"
+        animate={{ x: mousePos.x * 25, y: mousePos.y * 25 }}
+        transition={{ type: "spring", stiffness: 40, damping: 15 }}
+        style={{ 
+          backgroundImage: `linear-gradient(var(--accent) 1px, transparent 1px), linear-gradient(90deg, var(--accent) 1px, transparent 1px)`, 
+          backgroundSize: '45px 45px' 
+        }} 
+      />
 
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-          className="text-base md:text-xl text-gray-300 leading-relaxed max-w-xl mx-auto md:mx-0"
-        >
-          A <span className="text-blue-300 font-medium">Full Stack Developer</span> passionate
-          about building interactive and meaningful websites using{" "}
-          <span className="text-blue-300 font-medium">React</span>.
-        </motion.p>
+      {/* Content Side */}
+      <div className="w-full md:w-1/2 text-white space-y-6 relative z-10 mt-12 md:mt-0 flex flex-col items-center md:items-start">
+        <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+          <h1 className="text-5xl md:text-7xl font-black leading-tight tracking-tighter">
+            Hey, I'm <br />
+            <span style={{ color: 'var(--accent)' }}>Kavyansh Nigam</span>
+          </h1>
+        </motion.div>
+
+        <div className="h-10 md:h-12 flex items-center">
+          <p className="text-xl md:text-3xl font-bold tracking-tight text-white/90">
+            I am a <span className="border-r-4 border-[var(--accent)] pr-2 transition-colors duration-1000" style={{ color: 'var(--accent)' }}>
+              {displayText}
+            </span>
+          </p>
+        </div>
+
+        <p className="text-lg md:text-xl text-gray-400 leading-relaxed max-w-xl font-medium">
+          A 3rd-year CSE student at Bennett University, specialized in Computer Vision and high-performance Web Systems.
+        </p>
  
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8, delay: 0.4 }}
-          className="flex flex-wrap gap-4 justify-center md:justify-start pt-4"
-        >
-          <button
-            type="button"
-            onClick={handleResumeClick}
-            className="px-6 py-3 bg-blue-500/20 border border-blue-400/30 rounded-xl
-                       hover:bg-blue-500/30 hover:border-blue-400/50 transition-all duration-300 text-lg md:text-xl"
-          >
+        <div className="flex flex-wrap gap-4 pt-4">
+          <button className="px-8 py-3 bg-white/5 border border-white/10 rounded-2xl hover:bg-white/10 transition-all duration-300 text-sm font-black uppercase tracking-widest shadow-xl" style={{ borderLeft: '4px solid var(--accent)' }}>
             Resume
           </button>
-  
-          <a
-            href="https://github.com/Kavyansh11-gi"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="px-6 py-3 bg-transparent border border-blue-400/30 rounded-xl
-                       hover:bg-blue-500/20 hover:border-blue-400/50 transition-all duration-300 text-lg md:text-xl"
-          >
+          <a href="https://github.com/Kavyansh11-gi" target="_blank" rel="noopener noreferrer" className="px-8 py-3 bg-white/5 border border-white/10 rounded-2xl hover:bg-white/10 transition-all duration-300 text-sm font-black uppercase tracking-widest shadow-xl">
             Github
           </a>
-        </motion.div>
+        </div>
       </div>
 
-      {/* Image/Drag Side */}
-      <div className="w-full md:w-1/2 flex flex-col items-center">
-        <motion.div
-          drag
-          dragConstraints={dragAreaRef}
-          dragElastic={0.5}
-          className="relative perspective-1000 z-50 touch-none"
-          onMouseMove={handleMouseMove}
-          onMouseLeave={handleMouseLeave}
-        >
-          <div
-            className="relative w-64 h-64 md:w-96 md:h-96 transition-transform duration-200 ease-out preserve-3d"
-            style={{
-              transform: `rotateX(${rotation.x}deg) rotateY(${rotation.y}deg)`,
-            }}
+      {/* Image Side - Touch Enabled */}
+      <div className="w-full md:w-1/2 flex flex-col items-center justify-center relative min-h-[400px] z-10">
+        <motion.div 
+          className="absolute w-64 h-64 md:w-96 md:h-96 rounded-full blur-[120px] opacity-20 transition-all duration-1000"
+          animate={{ x: mousePos.x * -50, y: mousePos.y * -50 }}
+          style={{ backgroundColor: 'var(--accent)' }}
+        />
+
+        <div className="relative perspective-1000 touch-none">
+          <motion.div
+            className="relative w-64 h-64 md:w-80 md:h-80 transition-transform duration-300 ease-out preserve-3d"
+            style={{ transform: `rotateX(${rotation.x}deg) rotateY(${rotation.y}deg)` }}
           >
-            <div className="absolute inset-0 bg-blue-500/20 rounded-3xl blur-3xl translate-z-[-50px]" />
-
-            <div className="relative w-full h-full rounded-3xl overflow-hidden border border-blue-400/20 shadow-2xl shadow-blue-500/20 bg-gradient-to-br from-blue-500/10 to-purple-500/10 backdrop-blur-sm">
-              <img
-                src="/images/profile.jpg"
-                alt="Kavyansh Nigam"
-                className="w-full h-full object-cover pointer-events-none"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+            <div className="relative w-full h-full rounded-[2.5rem] overflow-hidden border border-white/10 bg-white/5 backdrop-blur-xl shadow-2xl">
+              <img src="/images/profile.jpg" alt="Kavyansh Nigam" className="w-full h-full object-cover pointer-events-none scale-105" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
             </div>
-          </div>
-        </motion.div>
+          </motion.div>
+        </div>
 
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1 }}
-          className="mt-6 text-gray-500 text-xs md:text-sm font-medium select-none italic"
-        >
-          Drag the photo or move your mouse over it
-        </motion.p>
+        <p className="mt-8 text-white text-[10px] font-black uppercase tracking-[0.5em] select-none italic opacity-30">
+          Interact to Tilt
+        </p>
       </div>
-
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-blue-500/5 to-transparent blur-3xl pointer-events-none" />
 
       <style>{`
         .perspective-1000 { perspective: 1000px; }
         .preserve-3d { transform-style: preserve-3d; }
-        .translate-z-[-50px] { transform: translateZ(-50px); }
+        .tracking-tighter { letter-spacing: -0.05em; }
       `}</style>
     </section>
   );
