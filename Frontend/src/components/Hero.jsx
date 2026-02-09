@@ -59,6 +59,18 @@ function HeroSection({ theme }) {
     handleInteraction(touch.clientX, touch.clientY, e.currentTarget);
   };
 
+  const handleResumeClick = () => {
+    const link = document.createElement("a");
+    link.href = "/kavyanshResume.pdf";  
+    link.download = "kavyanshResume.pdf";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    setShowPopup(true);
+    setTimeout(() => setShowPopup(false), 2500);
+  };
+
   const handleReset = () => {
     setRotation({ x: 0, y: 0 });
     setMousePos({ x: 0, y: 0 });
@@ -107,7 +119,10 @@ function HeroSection({ theme }) {
         </p>
  
         <div className="flex flex-wrap gap-4 pt-4">
-          <button className="px-8 py-3 bg-white/5 border border-white/10 rounded-2xl hover:bg-white/10 transition-all duration-300 text-sm font-black uppercase tracking-widest shadow-xl" style={{ borderLeft: '4px solid var(--accent)' }}>
+          <button 
+          type="button"
+          onClick={handleResumeClick}
+          className="px-8 py-3 bg-white/5 border border-white/10 rounded-2xl hover:bg-white/10 transition-all duration-300 text-sm font-black uppercase tracking-widest shadow-xl" style={{ borderLeft: '4px solid var(--accent)' }}>
             Resume
           </button>
           <a href="https://github.com/Kavyansh11-gi" target="_blank" rel="noopener noreferrer" className="px-8 py-3 bg-white/5 border border-white/10 rounded-2xl hover:bg-white/10 transition-all duration-300 text-sm font-black uppercase tracking-widest shadow-xl">
